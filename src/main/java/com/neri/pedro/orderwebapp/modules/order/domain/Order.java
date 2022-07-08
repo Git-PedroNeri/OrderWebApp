@@ -1,6 +1,6 @@
 package com.neri.pedro.orderwebapp.modules.order.domain;
 
-import com.neri.pedro.orderwebapp.modules.order.OrderStatus;
+import com.neri.pedro.orderwebapp.modules.order.enums.OrderStatus;
 import com.neri.pedro.orderwebapp.modules.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,11 +20,14 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
     @Column(name = "moment")
     private LocalDateTime moment;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
     @Column(name = "order_status")
     private Integer orderStatus;
 
@@ -37,6 +40,10 @@ public class Order {
         this.moment = moment;
         this.user = user;
         setOrderStatus(orderStatus);
+    }
+
+    public Order() {
+
     }
 
     public Long getId() {

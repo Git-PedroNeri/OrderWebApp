@@ -1,4 +1,4 @@
-package com.neri.pedro.orderwebapp.modules.order;
+package com.neri.pedro.orderwebapp.modules.order.enums;
 
 /**
  * @Created 07/07/2022 - 21:07
