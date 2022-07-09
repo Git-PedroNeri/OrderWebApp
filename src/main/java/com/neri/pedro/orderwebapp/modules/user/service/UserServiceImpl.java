@@ -1,8 +1,11 @@
 package com.neri.pedro.orderwebapp.modules.user.service;
 
+import com.neri.pedro.orderwebapp.comum.service.exeptions.DatabaseException;
+import com.neri.pedro.orderwebapp.comum.service.exeptions.ResourceNotFoundException;
 import com.neri.pedro.orderwebapp.modules.user.domain.User;
 import com.neri.pedro.orderwebapp.modules.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +17,12 @@ import java.util.Optional;
  */
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private UserRepository repository;
 
     public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+        this.repository = userRepository;
     }
 
     @Override
@@ -28,17 +31,34 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User salvar(User user) {
-        return null;
+    public User insert(User user) {
+        return repository.save(user);
+    }
+
+    @Override
+    public void delete(User user) {
+        repository.delete(user);
+    }
+
+    @Override
+    public void excluir(Long id) {
+        try {
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException(id);}
     }
 
     @Override
     public List<User> findAll() {
-        return userRepository.findAll();
+        return repository.findAll();
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public User findById(Long id) {
+        Optional<User> user = repository.findById(id);
+        return user.orElseThrow(() -> new ResourceNotFoundException(id));
+
     }
 }

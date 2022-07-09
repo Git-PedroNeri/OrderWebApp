@@ -39,9 +39,9 @@ public class Order {
     private Set<OrderItem> items = new HashSet<>();
 
     /*
-    * Order pode existir sem um Payment , mas o Payment não podera existir sem um Order
-    * Payment é DEPENDENTE de Order.Order INDEPENDETE entidade FORTE do relacionamento
-    */
+     * Order pode existir sem um Payment , mas o Payment não podera existir sem um Order
+     * Payment é DEPENDENTE de Order.Order INDEPENDETE entidade FORTE do relacionamento
+     */
     @OneToOne(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
     private Payment payment;
 
@@ -102,15 +102,10 @@ public class Order {
         }
     }
 
-    public BigDecimal getTotal(){
-
-        final BigDecimal total = items.stream()
-                .map(x -> x.getSubTotal())    // map
+    public BigDecimal getTotal() {
+        return items.stream()
+                .map(x -> x.getSubTotal())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return total;
-
-
     }
 
 

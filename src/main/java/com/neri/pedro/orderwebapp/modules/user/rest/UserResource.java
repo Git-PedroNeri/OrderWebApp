@@ -1,15 +1,16 @@
 package com.neri.pedro.orderwebapp.modules.user.rest;
 
+import com.neri.pedro.orderwebapp.comum.service.exeptions.ResourceNotFoundException;
 import com.neri.pedro.orderwebapp.modules.user.domain.User;
 import com.neri.pedro.orderwebapp.modules.user.service.UserServiceImpl;
 import com.neri.pedro.orderwebapp.modules.user.service.dto.UserDto;
 import com.neri.pedro.orderwebapp.modules.user.service.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,13 +38,42 @@ public class UserResource {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable Long id) {
-        Optional<User> userFounded = service.findById(id);
-        if (userFounded.isPresent()) {
-            return ResponseEntity.ok().body(mapper.toDto(userFounded.get()));
-
+        User userFounded = service.findById(id);
+        Optional<User> user = Optional.of(userFounded);
+        if (user.isPresent()) {
+            return ResponseEntity.ok().body(mapper.toDto(user.get()));
         }
-
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/insert")
+    public ResponseEntity<User> insert(@RequestBody User user) {
+        user = service.insert(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    //TODO Não testado
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        Optional<User> byId = Optional.of(service.findById(id));
+        if (byId.isPresent()) {
+            service.delete(byId.get());
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public void excluir(@PathVariable Long id) {
+            service.excluir(id);
+    }
+
+    //TODO Não testado
+    @PostMapping("/update/{id}")
+    public ResponseEntity<User> update(@RequestBody User user) {
+        user = service.insert(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
 
 }

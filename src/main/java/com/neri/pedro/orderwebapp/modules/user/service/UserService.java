@@ -12,9 +12,11 @@ import java.util.Optional;
 public interface UserService {
 
     User autenticar(String email, String senha);
-    User salvar(User user);
+    User insert(User user);
     List<User> findAll();
-    Optional<User> findById(Long id);
+    User findById(Long id);
+    void delete(User id);
+    void excluir(Long id);
 
 
 
