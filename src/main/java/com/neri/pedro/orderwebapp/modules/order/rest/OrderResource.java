@@ -36,10 +36,10 @@ public class OrderResource {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> findById(@PathVariable Long id) {
+    public ResponseEntity<Order> findById(@PathVariable Long id) {
         Optional<Order> orderFounded = service.findById(id);
         if (orderFounded.isPresent()) {
-            return ResponseEntity.ok().body(mapper.toDto(orderFounded.get()));
+            return ResponseEntity.ok().body(orderFounded.get());
 
         }
 

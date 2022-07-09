@@ -13,7 +13,6 @@ import java.util.Objects;
 @ToString
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "tb_user")
@@ -35,10 +34,33 @@ public class User {
 
     @Column(name = "password")
     private String password;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Order> orders = new ArrayList<Order>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Address address;
+
+    public User(Long id, String name, String email, String phone, String password, List<Order> orders, Address address) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.orders = orders;
+        this.address = address;
+    }
+
+    public User(Long id, String name, String email, String phone, String password, List<Order> orders) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.orders = orders;
+    }
 
     @Override
     public boolean equals(Object o) {

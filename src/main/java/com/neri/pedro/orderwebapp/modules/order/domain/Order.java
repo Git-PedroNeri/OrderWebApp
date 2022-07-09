@@ -1,12 +1,16 @@
 package com.neri.pedro.orderwebapp.modules.order.domain;
 
 import com.neri.pedro.orderwebapp.modules.order.enums.OrderStatus;
+import com.neri.pedro.orderwebapp.modules.payment.domain.Payment;
 import com.neri.pedro.orderwebapp.modules.user.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -31,9 +35,15 @@ public class Order {
     @Column(name = "order_status")
     private Integer orderStatus;
 
-    public Order(Long id) {
-        this.id = id;
-    }
+    @OneToMany(mappedBy = "id.order", fetch = FetchType.EAGER)
+    private Set<OrderItem> items = new HashSet<>();
+
+    /*
+    * Order pode existir sem um Payment , mas o Payment não podera existir sem um Order
+    * Payment é DEPENDENTE de Order.Order INDEPENDETE entidade FORTE do relacionamento
+    */
+    @OneToOne(mappedBy = "order", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Payment payment;
 
     public Order(Long id, LocalDateTime moment, User user, OrderStatus orderStatus) {
         this.id = id;
@@ -44,6 +54,18 @@ public class Order {
 
     public Order() {
 
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
+    }
+
+    public Set<OrderItem> getItems() {
+        return items;
     }
 
     public Long getId() {
@@ -71,7 +93,7 @@ public class Order {
     }
 
     public OrderStatus getOrderStatus() {
-        return OrderStatus.valueOf(String.valueOf(orderStatus));
+        return OrderStatus.valueOfByCode(orderStatus);
     }
 
     public void setOrderStatus(OrderStatus orderStatus) {
@@ -79,4 +101,17 @@ public class Order {
             this.orderStatus = orderStatus.getCode();
         }
     }
+
+    public BigDecimal getTotal(){
+
+        final BigDecimal total = items.stream()
+                .map(x -> x.getSubTotal())    // map
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return total;
+
+
+    }
+
+
 }

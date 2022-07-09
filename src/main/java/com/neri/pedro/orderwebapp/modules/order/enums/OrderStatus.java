@@ -1,5 +1,7 @@
 package com.neri.pedro.orderwebapp.modules.order.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @Created 07/07/2022 - 21:07
  * @Author pedro.neri
@@ -14,14 +16,14 @@ public enum OrderStatus {
     CANCELED(5, "Canceled");
 
     private int code;
-    private String Description;
+    private String description;
 
     private OrderStatus(int code, String description) {
         this.code = code;
-        Description = description;
+        this.description = description;
     }
 
-    static OrderStatus valueOf(int code) {
+    public static OrderStatus valueOfByCode(int code) {
         for (OrderStatus status : OrderStatus.values()) {
             if (status.getCode() == code) {
                 return status;
@@ -39,10 +41,10 @@ public enum OrderStatus {
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 }

@@ -1,6 +1,9 @@
 package com.neri.pedro.orderwebapp.modules.product.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.neri.pedro.orderwebapp.modules.category.domain.Category;
+import com.neri.pedro.orderwebapp.modules.order.domain.Order;
+import com.neri.pedro.orderwebapp.modules.order.domain.OrderItem;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -35,12 +38,17 @@ public class Product {
     @Column(name = "img_url")
     private String imgURL;
 
+
     @Column(name = "category")
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_product_category",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "id.product", fetch = FetchType.EAGER)
+    private Set<OrderItem> items = new HashSet<>();
+
 
     public Product(Long id, String name, String description, BigDecimal price, String imgURL) {
         this.id = id;
@@ -93,6 +101,16 @@ public class Product {
     public Set<Category> getCategories() {
         return categories;
     }
+
+    @JsonIgnore
+    public Set<Order> getOrders() {
+        Set<Order> set = new HashSet<Order>();
+        for (OrderItem x : items) {
+            set.add(x.getOrder());
+        }
+        return set;
+    }
+
 
     @Override
     public boolean equals(Object o) {
